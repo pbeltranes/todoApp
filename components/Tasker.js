@@ -6,40 +6,76 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  Button,
-  TextInput,
   TouchableOpacity,
   View
 } from "react-native";
+
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Button, Input } from "react-native-elements";
 import Constants from "expo-constants";
 import { MonoText } from "../components/StyledText";
 
-function Item({ task }) {
-  console.log(task);
-  return (
-    <View style={styles.item}>
-      <Text style={styles.title}>
-        {task.id}. {task.description}
-      </Text>
-    </View>
-  );
-}
-
 export default function Tasker() {
+  function Item({ task }) {
+    console.log(task);
+    return (
+      <View style={styles.item}>
+        {task.status ? (
+          <Icon
+            style={styles.check}
+            name="check-circle"
+            size={35}
+            color="blue"
+            onPress={ () => setList({ ...list, status: false })}
+          />
+        ) : (
+          <Icon
+            style={styles.check}
+            name="check-circle"
+            size={35}
+            color="white"
+            onPress={ () => setList({ ...list, status: true })}
+          />
+        )}
+        <Text style={styles.title}>{task.description}</Text>
+
+        <Icon
+          title="X"
+          size={35}
+          style={styles.delete}
+          onPress={() => setList(list.filter(item => item.id !== task.id))}
+          name="times"
+        />
+      </View>
+    );
+  }
+
   const [list, setList] = useState([]);
   const [value, onChangeText] = React.useState("");
 
   const onChange = () => {
     setList([
       ...list,
-      { id: list.length, description: value, lista: "principales" }
+      {
+        id: list.length,
+        description: value,
+        lista: "principales",
+        status: false
+      }
     ]);
     onChangeText("");
   };
+  const deleteItem = task =>
+    setList(
+      list.filter(item => {
+        item.description !== task;
+      })
+    );
+
   return (
     <View>
       <View style={styles.getStartedContainer}>
-        <TextInput
+        <Input
           style={{
             height: 40,
             borderColor: "gray",
@@ -100,7 +136,9 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: "center",
-    marginHorizontal: 50
+    marginHorizontal: 50,
+    flex: 1,
+    flexDirection: "row"
   },
   homeScreenFilename: {
     marginVertical: 7
@@ -163,12 +201,24 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "#f101",
-    padding: 10,
+    padding: 5,
     marginVertical: 8,
     marginHorizontal: 8,
-    borderRadius: 20
+    borderRadius: 20,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   title: {
-    fontSize: 32
+    fontSize: 32,
+    width: 150,
+    flex: 4
+  },
+  delete: {
+    width: 50,
+    flex: 1
+  },
+  check: {
+    padding: 5
   }
 });
